@@ -1,0 +1,25 @@
+Move storage to ramdisk
+
+set permissions on storage
+
+change storage criteria in settings
+
+setup admin user through django interface
+
+
+# set this to avoid bug
+export LC_ALL="en_US.UTF-8"
+webapp/graphite manage.py createsuperuser
+
+
+create user 
+go to :8080/admin/
+note: trailing slash requried
+
+
+start cache
+bin/graphite-cache start
+
+
+
+server error, database is locked - restart apache
