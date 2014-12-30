@@ -35,46 +35,46 @@ from daemon import runner
 HOSTNAME = socket.gethostname()
 
 CONFIG = {
-    "TemperatureKeevaRoomBack": '10-0008029db5bc',
-    "TemperatureKeevaRoomTop": 'o28.3DA0D4040000',
-    "TemperatureKeevaCupBoard": '10-0008029d938d',
-    "TemperatureAiringCabinet": '10-0008029db6c3',
-    "TemperatureAttic": '10-0008029da542',
-    "TemperatureNiamhRoomBack": "o28.6BFED3040000",
-    "TemperatureNiamhRoomTop": "o28.45C0D4040000",
-    "TemperatureLivingRoomWindow": "28-000004d41fb1",
-    "TemperatureLivingRoomCupBoard": "28-000004d45cae",
-    "TemperatureLandingTop": "o10.ED859D020800",
-    "TemperatureLandingMiddle": "28-000004d3f73e",
-    "TemperatureLandingBottom": "10-0008029dc359",
-    "TemperatureHotWater": "o10.B1B29D020800",
-    "TemperatureBoilerWater": "o10.0ec89d020800",
-    "TemperatureHallwayTop": "28-000004d49218",
-    "TemperatureBackRoomFront": "28-000004d422f5",
-    "TemperatureHallwayBottom": "28-00000584f21d",
-    "TemperatureBackRoomBack": "28-0000058528bc",
+    "Temperature.TopFloor.FrontFloor": '10-0008029db5bc',
+    "Temperature.TopFloor.FrontWall": 'o28.3DA0D4040000',
+    "Temperature.TopFloor.FrontCupBoard": '10-0008029d938d',
+    "Temperature.TopFloor.AiringCabinet": '10-0008029db6c3',
+    "Temperature.TopFloor.Attic": '10-0008029da542',
+    "Temperature.TopFloor.BackFloor": "o28.6BFED3040000",
+    "Temperature.TopFloor.BackWall": "o28.45C0D4040000",
+    "Temperature.LivingRoom.Window": "28-000004d41fb1",
+    "Temperature.LivingRoom.CupBoard": "28-000004d45cae",
+    "Temperature.Landing.Top": "o10.ED859D020800",
+    "Temperature.Landing.Middle": "28-000004d3f73e",
+    "Temperature.Landing.Bottom": "10-0008029dc359",
+    "Temperature.Water.Tank": "o10.B1B29D020800",
+    "Temperature.Water.Boiler": "o10.0ec89d020800",
+    "Temperature.Hallway.Top": "28-000004d49218",
+    "Temperature.Hallway.Bottom": "28-00000584f21d",
+    "Temperature.GroundFloor.BackDoor": "28-000004d422f5",
+    "Temperature.GroundFloor.BackWindow": "28-0000058528bc",
 
 }
 
 SENSOR_GROUPS = [
-    ("TemperatureKeevaRoomBack",
-     "TemperatureKeevaRoomTop",
-     "TemperatureKeevaCupBoard",
-     "TemperatureAiringCabinet",
-     "TemperatureAttic",
-     "TemperatureNiamhRoomBack",
-     "TemperatureNiamhRoomTop",
-     "TemperatureLandingTop",
-     "TemperatureHotWater",
-     "TemperatureBoilerWater"),
-    ("TemperatureLivingRoomWindow",
-     "TemperatureLivingRoomCupBoard",
-     "TemperatureLandingMiddle",
-     "TemperatureLandingBottom"),
-    ("TemperatureHallwayTop",
-     "TemperatureHallwayBottom",
-     "TemperatureBackRoomBack",
-     "TemperatureBackRoomFront"),
+    ("Temperature.TopFloor.FrontFloor",
+     "Temperature.TopFloor.FrontWall",
+     "Temperature.TopFloor.FrontCupBoard",
+     "Temperature.TopFloor.AiringCabinet",
+     "Temperature.TopFloor.Attic",
+     "Temperature.TopFloor.BackFloor",
+     "Temperature.TopFloor.BackWall",
+     "Temperature.Landing.Top",
+     "Temperature.Water.Tank",
+     "Temperature.Water.Boiler"),
+    ("Temperature.LivingRoom.Window",
+     "Temperature.LivingRoom.CupBoard",
+     "Temperature.Landing.Middle",
+     "Temperature.Landing.Bottom"),
+    ("Temperature.Hallway.Top",
+     "Temperature.Hallway.Bottom",
+     "Temperature.GroundFloor.BackDoor",
+     "Temperature.GroundFloor.BackWindow"),
 ]
 
 CACHE = {}
@@ -84,6 +84,8 @@ HEART_BEAT = 10
 
 
 class App(Monitor):
+
+    label = "temperature"
 
     def __init__(self, *args, **kwargs):
         Monitor.__init__(self, *args, **kwargs)
@@ -158,7 +160,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 app = App(logger=logger, heart_beat=HEART_BEAT)
-app.run()
 
 daemon_runner = runner.DaemonRunner(app)
 # This ensures that the logger file handle does not get closed during

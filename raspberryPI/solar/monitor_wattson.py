@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 # http://www.gavinj.net/2012/06/building-python-daemon-process.html
+# Inspired by:
+# http://pikarinen.com/rrdwattsond/
+# https://github.com/sapg/openwattson
+# See also: http://wattsonexplorer.sourceforge.net/
 
 import time
 import logging
@@ -15,6 +19,8 @@ HEART_BEAT = 1
 
 
 class App(Monitor):
+
+    label = "wattson"
 
     def __init__(self, *args, **kwargs):
         
@@ -94,8 +100,12 @@ class App(Monitor):
         if solar_power is None:
             solar_status = "fail"
             solar_power = 0
+        elif len(solar_power) != 4:
+            logger.warning(
+                "malformed grid power: %s" % list(solar_power))
+            solar_status = "fail"
+            solar_power = 0
         else:
-            assert len(solar_power) == 4
             solar_power = int(solar_power, 16)
 
         # get current energy usage in watts
@@ -103,9 +113,12 @@ class App(Monitor):
         if grid_power is None:
             grid_status = "fail"
             grid_power = 0
+        elif len(grid_power) != 4:
+            logger.warning(
+                "malformed grid power: %s" % list(grid_power))
+            grid_status = "fail"
+            grid_power = None
         else:
-            assert len(grid_power) == 4, \
-                "malformed grid power: %s" % list(grid_power)
             grid_power = int(grid_power, 16)
 
         self.logger.debug(
@@ -116,20 +129,19 @@ class App(Monitor):
             "status: grid=%s, solar=%s" %
             (grid_status, solar_status))
 
-        values = {'WattsonGridPower': grid_power,
-                  'WattsonSolarPower': solar_power}
+        values = {'Wattson.Power.Grid': grid_power,
+                  'Wattson.Power.Solar': solar_power}
 
         return values
 
 logger = logging.getLogger("DaemonLog")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler = logging.FileHandler("/mnt/ramdisk/wattson.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 app = App(logger=logger, heart_beat=HEART_BEAT)
-# app.run()
 
 daemon_runner = runner.DaemonRunner(app)
 # This ensures that the logger file handle does not get closed during

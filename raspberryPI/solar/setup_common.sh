@@ -6,42 +6,42 @@ apt-get -y update
 apt-get -y upgrade
 
 apt-get -y remove --purge wolfram-engine triggerhappy
-# Remove X-Server and related stuff:
+# # Remove X-Server and related stuff:
 apt-get -y remove --purge xserver-common lightdm
 insserv -r x11-common
 
-# auto-remove some X11 related libs
+# # auto-remove some X11 related libs
 apt-get -y autoremove --purge
 
-# install packages required for monitoring
+# # install packages required for monitoring
 apt-get -y install rrdtool python-rrdtool python-daemon apache2 python-serial
 
 # turn off 
 if [ ! -e /etc/default/rcS.orig ]; then
-cp /etc/default/rcS /etc/default/rcS.orig
-sh -c "echo 'RAMTMP=yes' >> /etc/default/rcS"
+    cp /etc/default/rcS /etc/default/rcS.orig
+    sh -c "echo 'RAMTMP=yes' >> /etc/default/rcS"
 fi
 
 mkdir /mnt/ramdisk
 
 # create fstab
 if [ ! -e /etc/fstab.orig ] ; then
-mv /etc/fstab /etc/fstab.orig
-sh -c "echo 'tmpfs           /tmp            tmpfs   nodev,nosuid,size=30M,mode=1777       0    0' >> /etc/fstab"
-sh -c "echo 'tmpfs           /var/log        tmpfs   nodev,nosuid,size=30M,mode=1777       0    0' >> /etc/fstab"
-sh -c "echo 'proc            /proc           proc    defaults                              0    0' >> /etc/fstab"
-sh -c "echo '/dev/mmcblk0p1  /boot           vfat    defaults                              0    2' >> /etc/fstab"
-sh -c "echo '/dev/mmcblk0p2  /               ext4    defaults,ro,noatime,errors=remount-ro 0    1' >> /etc/fstab"
-# add ramdisk for monitoring
-sh -c "echo 'tmpfs           /mnt/ramdisk    tmpfs   defaults,size=200M                    0    0' >> /etc/fstab"
-# add mount point for diskstation
-sh -c "echo '192.168.0.2:/volume1/data       /mnt/diskstation        nfs     user,noauto' >> /etc/fstab"
-sh -c "echo ' ' >> /etc/fstab"
+    mv /etc/fstab /etc/fstab.orig
+    sh -c "echo 'tmpfs           /tmp            tmpfs   nodev,nosuid,size=30M,mode=1777       0    0' >> /etc/fstab"
+    sh -c "echo 'tmpfs           /var/log        tmpfs   nodev,nosuid,size=30M,mode=1777       0    0' >> /etc/fstab"
+    sh -c "echo 'proc            /proc           proc    defaults                              0    0' >> /etc/fstab"
+    sh -c "echo '/dev/mmcblk0p1  /boot           vfat    defaults                              0    2' >> /etc/fstab"
+    sh -c "echo '/dev/mmcblk0p2  /               ext4    defaults,ro,noatime,errors=remount-ro 0    1' >> /etc/fstab"
+    # add ramdisk for monitoring
+    sh -c "echo 'tmpfs           /mnt/ramdisk    tmpfs   defaults,size=200M                    0    0' >> /etc/fstab"
+    # add mount point for diskstation
+    sh -c "echo '192.168.0.2:/volume1/data       /mnt/diskstation        nfs     user,noauto' >> /etc/fstab"
+    sh -c "echo ' ' >> /etc/fstab"
 fi
 
 if [ ! -e /etc/mtab.orig ]; then
 mv /etc/mtab /etc/mtab.orig
-ln -s /proc/self/mounts /etc/mtab
+ln -fs /proc/self/mounts /etc/mtab
 fi
 
 cat <<EOT1 > /usr/bin/rpi-rw
@@ -68,7 +68,7 @@ mkdir /usr/lib/cgi-bin
 echo "change /etc/init.d/apache2 to create log dir"
 if [ ! -e /etc/init.d/apache2.orig ] ; then
 cp /etc/init.d/apache2 /etc/init.d/apache2.orig
-perl -p -e "s/start\)\n/start)\nmkdir /var/log/apache2 || true" < /etc/init.d/apache2.orig > /etc/init.d/apache2
+perl -p -e "s/start\)\n/start)\nmkdir \/var\/log\/apache2 || true\n/" < /etc/init.d/apache2.orig > /etc/init.d/apache2
 fi
 
 #######################################################
@@ -96,16 +96,18 @@ chmod u+x /etc/init.d/monitor_temperature
 
 #######################################################
 echo "setting up monitoring of wattson"
+cp monitor_wattson.sh /etc/init.d/monitor_wattson
+chmod 755 /etc/init.d/monitor_wattson
 cp monitor_wattson.py /usr/share/solar/monitor_wattson.py
 chmod u+x /etc/init.d/monitor_wattson
 
 #######################################################
 echo "setting up web services"
 cp *web.py Utils.py /usr/lib/cgi-bin/
-cp Utils.py /usr/share/solar/Utils.py
+cp Monitor.py Utils.py /usr/share/solar/
 chown -R www-data:www-data /usr/lib/cgi-bin/*.py /mnt/ramdisk
 cp images/*.png /mnt/ramdisk
-ln -s /mnt/ramdisk /var/www/images
+ln -fs /mnt/ramdisk /var/www/images
 
 # The following needs to be done to activate the various services
 # depending on which machine we are on:
@@ -116,7 +118,6 @@ ln -s /mnt/ramdisk /var/www/images
 # sudo rename 's/S01/S90/' /etc/rc*.d/S*monito*
 
 ##########################################################
-# Turned off because of RO
 #
 echo "Setting up ramdisk backup"
 mkdir /var/ramdisk-backup
@@ -132,3 +133,14 @@ echo "@daily  /etc/init.d/ramdisk sync >> /dev/null 2>&1" | crontab
 # If apache does not start up, 
 # make sure /var/log/apache2 exists
 
+##########################################################
+#
+# echo "Setting up dashing init script"
+# cp dashing.sh /etc/init.d/dashing
+# chmod 755 /etc/init.d/dashing
+# chown root:root /etc/init.d/dashing
+
+# echo "Setting up graphite init script"
+# cp carbon-cache.sh /etc/init.d/carbon-cache
+# chmod 755 /etc/init.d/carbon-cache
+# chown root:root /etc/init.d/carbon-cache

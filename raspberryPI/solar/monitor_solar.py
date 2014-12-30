@@ -3,6 +3,7 @@
 # http://www.gavinj.net/2012/06/building-python-daemon-process.html
 
 import os
+import sys
 import time
 import logging
 
@@ -16,7 +17,7 @@ import socket
 import re
 import struct
 
-HEART_BEAT=10
+HEART_BEAT = 10
 
 #####################################################
 # Send UDP broadcast packets
@@ -121,32 +122,35 @@ class Result:
 
     def items(self):
         return (
-            ("SolarInternalTemperature",
+            ("Solar.InternalTemperature",
              self.internal_temperature),
-            ("SolarVoltage1", self.voltage1),
-            ("SolarVoltage2", self.voltage2),
-            ("SolarCurrent1", self.current1),
-            ("SolarCurrent2", self.current2),
-            ("SolarPower1", self.power1),
-            ("SolarPower2", self.power2),
-            ("SolarGridFrequency",
+            ("Solar.Voltage.West", self.voltage1),
+            ("Solar.Voltage.East", self.voltage2),
+            ("Solar.Current.West", self.current1),
+            ("Solar.Current.East", self.current2),
+            ("Solar.Power.West", self.power1),
+            ("Solar.Power.East", self.power2),
+            ("Solar.Grid.Frequency",
              self.grid_frequency),
-            ("SolarGridCurrent",
+            ("Solar.Grid.Current",
              self.grid_current),
-            ("SolarGridVoltage",
+            ("Solar.Grid.Voltage",
              self.grid_voltage),
-            ("SolarPowerTotal",
+            ("Solar.Power.Total",
              self.power_total),
-            ("SolarEnergyToday",
+            ("Solar.Energy.Today",
              self.energy_today),
-            ("SolarEnergyTotal",
+            ("Solar.Energy.Total",
              self.energy_total))
 
 
 class App(Monitor):
 
+    label = "solar"
+
     def __init__(self, *args, **kwargs):
 
+        Monitor.__init__(self, *args, **kwargs)
         # open tcp connection
         self.connection = None
 
@@ -262,7 +266,7 @@ class App(Monitor):
             self.connection.close()
 
 logger = logging.getLogger("DaemonLog")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler = logging.FileHandler("/mnt/ramdisk/solar.log")
@@ -270,9 +274,11 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 app = App(logger=logger, heart_beat=HEART_BEAT)
+app.run()
 
 daemon_runner = runner.DaemonRunner(app)
 # This ensures that the logger file handle does not get closed during
 # daemonization
 daemon_runner.daemon_context.files_preserve = [handler.stream]
 daemon_runner.do_action()
+
