@@ -44,12 +44,12 @@ python-cairo-dev \
 python-ldap \
 erlang-os-mon \
 erlang-snmp \
-rabbitmq-server \
 netcat
+
+# rabbitmq-server
 
 # install with pip
 pips whisper carbon graphite-web
-
 
 # apache2 site conf from web
 rm -f /etc/apache2/sites-available/graphite
@@ -69,22 +69,25 @@ fi
 # copy configuration files
 cp graphite/*.{conf,wsgi} /opt/graphite/conf
 
-# because docs say so
-mkdir -p /etc/httpd/wsgi/
+# needs to exist for creating sockets - link to ramdisk
+# to circumvent read-only file system
+rm -rf /etc/httpd/wsgi
+mkdir -p /etc/httpd
+ln -s /mnt/ramdisk/wsgi /etc/httpd/wsgi
 
 #Local settings from example
 cp graphite/local_settings.py /opt/graphite/webapp/graphite/local_settings.py
 
-# SyncDB - requires interaction
-# work around a bug in django
+# sync_db - creates tables and users
+# work around a bug in django, en_UK.UTF-8 causes error
+SAVE_LC_ALL=$LC_ALL
 export LC_ALL="en_US.UTF-8"
-cd /opt/graphite/webapp/graphite && python manage.py syncdb 
-
-# without input:
-# cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
+(cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput)
+# cd /opt/graphite/webapp/graphite && python manage.py syncdb 
+export LC_ALL=$SAVE_LC_ALL
 
 # set permissions
-chown www-data:www-data /mnt/ramdisk/graphite
+chown -R www-data:www-data /mnt/ramdisk/graphite
 chown -R www-data:www-data /opt/graphite/storage
 
 # enable mod_wsgi
@@ -96,9 +99,30 @@ a2ensite graphite
 # restart apache2
 service apache2 reload
 
+echo "setting up graphite init script"
+cp carbon-cache.sh /etc/init.d/carbon-cache
+chmod 755 /etc/init.d/carbon-cache
+chown root:root /etc/init.d/carbon-cache
+
+# See: https://swiftstack.com/blog/2012/08/15/old-school-monkeypatching/
+echo "setting up backups"
+git clone https://github.com/smerritt/flockit.git
+cd flockit
+make
+
+
 cat <<EOC | crontab
 SHELL=/bin/bash
+
+# backup whisper databases
+# run 30 minutes after 1 am, every day
+30 1 * * *    sudo sh -c "/home/pi/Projects/raspberryPI/solar/graphite_backup.sh >> /mnt/ramdisk/backup.log 2>&1"
+
 # remove log files from ramdisk
 # run 30 minutes after 2 am, every day
-30 2 * * *    (sudo find /mnt/ramdisk/graphite/storage/log -name "*.log.*" -exec rm -f {} \; > dev/null)
+30 2 * * *    sudo sh -c "find /mnt/ramdisk/graphite/storage/log -name \"*.log.*\" -exec rm -f {} \; > dev/null"
+
 EOC
+
+
+
