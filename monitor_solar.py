@@ -3,7 +3,6 @@
 # http://www.gavinj.net/2012/06/building-python-daemon-process.html
 
 import os
-import sys
 import time
 import logging
 
@@ -160,6 +159,7 @@ class App(Monitor):
 
         self.logger.debug("TCP:%i opening" % TCP_PORT)
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         while True:
             try:
                 tcp.bind((TCP_HOST, TCP_PORT))
