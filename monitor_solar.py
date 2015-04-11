@@ -158,6 +158,8 @@ class App(Monitor):
         Monitor.setup(self)
 
         self.logger.debug("TCP:%i opening" % TCP_PORT)
+
+
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         while True:
@@ -245,8 +247,8 @@ class App(Monitor):
                 logger.debug("getting data")
                 conn.send(toMsg(TCP_MESSAGE_QUERY_DATA))
                 data = conn.recv(1024)
-            except (OSError, socket.error):
-                logger.warn("error while retrieving data")
+            except (OSError, socket.error) as e:
+                logger.warn("error while retrieving data: %s" % e.strerror)
                 restart = True
 
             if len(data) == 0:
@@ -255,8 +257,9 @@ class App(Monitor):
 
             if restart:
                 self.logger.warn("closing connection and restarting")
-                conn.close()
-                tcp.close()
+                
+                self.connection.close()
+                self.tcp.close()
                 self.setup()
                 continue
 
