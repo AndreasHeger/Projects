@@ -211,7 +211,7 @@ class App(Monitor):
                     continue
 
                 self.logger.debug('TCP: connected to inverter: %s:%s' %
-                                  (str(addr), str(conn)))
+                                  (str(addr), str(connection)))
 
                 self.logger.debug("sent message 1")
                 connection.send(toMsg(TCP_MESSAGE_QUERY1))
