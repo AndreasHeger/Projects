@@ -152,13 +152,13 @@ class App(Monitor):
         Monitor.__init__(self, *args, **kwargs)
         # open tcp connection
         self.connection = None
+        self.tcp_socket = None
 
     def setup(self):
         
         Monitor.setup(self)
 
         self.logger.debug("TCP:%i opening" % TCP_PORT)
-
 
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -205,7 +205,7 @@ class App(Monitor):
 
                 try:
                     tcp.listen(1)
-                    conn, addr = tcp.accept()
+                    connection, addr = tcp.accept()
                 except socket.timeout:
                     logger.debug("no connection - retrying")
                     continue
@@ -214,43 +214,46 @@ class App(Monitor):
                                   (str(addr), str(conn)))
 
                 self.logger.debug("sent message 1")
-                conn.send(toMsg(TCP_MESSAGE_QUERY1))
-                data = conn.recv(1024)
+                connection.send(toMsg(TCP_MESSAGE_QUERY1))
+                data = connection.recv(1024)
                 self.logger.debug(
                     "received response of length %i" % len(data))
 
                 self.logger.debug("sent message 2")
-                conn.send(toMsg(TCP_MESSAGE_QUERY2))
-                data = conn.recv(1024)
+                connection.send(toMsg(TCP_MESSAGE_QUERY2))
+                data = connection.recv(1024)
                 self.logger.debug(
                     "received response of length %i" % len(data))
 
                 self.logger.debug("sent message 3")
-                conn.send(toMsg(TCP_MESSAGE_QUERY3))
-                data = conn.recv(1024)
+                connection.send(toMsg(TCP_MESSAGE_QUERY3))
+                data = connection.recv(1024)
                 self.logger.debug(
                     "received response of length %i" % len(data))
 
                 break
 
         self.connection = conn
-        self.tcp = tcp
+        self.tcp_socket = tcp
 
     def monitor(self):
 
-        conn = self.connection
-        tcp = self.tcp
+        connection = self.connection
 
         while True:
             restart = False
             try:
                 logger.debug("getting data")
-                conn.send(toMsg(TCP_MESSAGE_QUERY_DATA))
-                data = conn.recv(1024)
+                connection.send(toMsg(TCP_MESSAGE_QUERY_DATA))
+                data = connection.recv(1024)
             except (OSError, socket.error) as e:
                 logger.warn("error while retrieving data: %s" % e.strerror)
                 restart = True
 
+            # According to python sockets tutorial: "When a recv
+            # returns 0 bytes, it means the other side has closed (or
+            # is in the process of closing) the connection. You will
+            # not receive any more data on this connection. Ever."
             if len(data) == 0:
                 self.logger.warn("received 0 bytes when retrieving data")
                 restart = True
@@ -258,8 +261,15 @@ class App(Monitor):
             if restart:
                 self.logger.warn("closing connection and restarting")
                 
+                # Python docs:
+                # close() releases the resource associated with a
+                # connection but does not necessarily close the
+                # connection immediately. If you want to close the
+                # connection in a timely fashion, call shutdown()
+                # before close().
+
+                self.connection.shutdown(socket.SHUT_RDWR)
                 self.connection.close()
-                self.tcp.close()
                 self.setup()
                 continue
 
