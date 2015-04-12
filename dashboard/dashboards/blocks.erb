@@ -2,13 +2,13 @@
 
 $(function() {
   // These settings override the defaults set in application.coffee.
-  Dashing.numColumns = 10;
+  Dashing.numColumns = 14;
 });
 </script>
 
 <script type='text/javascript'>
  $(function() {
-   Dashing.gridsterLayout('[{"col":1,"row":1,"size_x":2,"size_y":2},{"col":4,"row":1,"size_x":2,"size_y":2},{"col":6,"row":1,"size_x":2,"size_y":2},{"col":3,"row":1,"size_x":1,"size_y":1},{"col":3,"row":2,"size_x":1,"size_y":1}]')
+   Dashing.gridsterLayout('[{"col":1,"row":1,"size_x":2,"size_y":2},{"col":4,"row":1,"size_x":2,"size_y":2},{"col":10,"row":1,"size_x":2,"size_y":2},{"col":3,"row":1,"size_x":1,"size_y":1},{"col":3,"row":2,"size_x":1,"size_y":1},{"col":6,"row":1,"size_x":4,"size_y":2}]')
  });
  </script>
 
@@ -65,6 +65,20 @@ $(function() {
 	   data-title="Solar Power" 
 	   style="background-color:#E4593F"></div>
     </li>
+
+    <li data-row="1" data-col="1" data-sizex="4" data-sizey="2";>
+      <div data-id="temperature_weekly"
+      data-view="Rickshawgraph"
+      data-renderer="line"
+      data-title="Temperature trends"
+      data-color-scheme="rainbow"
+      data-legend="true"
+      data-unstack="true"
+      data-default-alpha=0.5
+      style="background-color:#ccc;">
+      </div>
+    </li>
+
   </ul>
 
 </div>
