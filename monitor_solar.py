@@ -233,7 +233,7 @@ class App(Monitor):
 
                 break
 
-        self.connection = conn
+        self.connection = connection
         self.tcp_socket = tcp
 
     def monitor(self):
