@@ -116,7 +116,7 @@ SHELL=/bin/bash
 
 # backup whisper databases
 # run 30 minutes after 1 am, every day
-30 1 * * *    sudo sh -c "/home/pi/Projects/raspberryPI/solar/graphite_backup.sh >> /mnt/ramdisk/backup.log 2>&1"
+30 1 * * *    sudo sh -c "/home/pi/pi-monitoring/graphite_backup.sh >> /mnt/ramdisk/backup.log 2>&1"
 
 # remove log files from ramdisk
 # run 30 minutes after 2 am, every day
