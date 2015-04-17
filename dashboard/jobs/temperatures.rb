@@ -99,6 +99,8 @@ SCHEDULER.every '30s', :first_in => 0 do |job|
       "mincritical" => mincritical}
     end
 
+    next if progress_items.empty?
+
     send_event("temperatures",
                { "title" => "Temperature",
                  "meter_items" => progress_items })

@@ -72,6 +72,8 @@ job_mapping.each do |entry|
           "data"=> _points }
       end
 
+      next if series.empty?
+    
       send_event(entry["name"], { 
                    series: series })
    end
