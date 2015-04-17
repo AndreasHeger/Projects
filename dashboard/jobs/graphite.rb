@@ -56,7 +56,12 @@ class Graphite
     def query(statname, since=nil)
         since ||= '-1hour'
         http = Net::HTTP.new(@host, @port)
-        response = http.request(Net::HTTP::Get.new("/render?format=json&target=#{statname}&from=#{since}"))
+        begin
+          response = http.request(Net::HTTP::Get.new("/render?format=json&target=#{statname}&from=#{since}"))
+        rescue StandardError => msg
+          puts "#error retrieving data #{msg}"
+          return nil
+        end
         result = JSON.parse(response.body, :symbolize_names => true)
         return result.first
     end
@@ -65,6 +70,8 @@ class Graphite
     def points(name, since=nil)
         since ||= '-1min'
         stats = query name, since
+        return nil, nil if stats.nil?
+
         datapoints = stats[:datapoints]
 
         points = []
@@ -83,6 +90,7 @@ class Graphite
     def value(name, since=nil)
         since ||= '-10min'
         stats = query name, since
+        return nil if stats.nil?
         last = (stats[:datapoints].select { |el| not el[0].nil? }).last[0]
         return last
     end
@@ -103,6 +111,7 @@ job_mapping.each do |title, dd|
     # get the current points and value. Timespan is static set at 1
     # hour.
     points, current = q.points "#{statname}", "-1hour"
+    next if points.nil?
 
     last_values[title] ||= current
 

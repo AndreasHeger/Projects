@@ -64,6 +64,9 @@ job_mapping.each do |entry|
       entry["metrics"].each do |metric|
         stat = metric['stat']
         _points, current = q.points("#{stat}", since)
+
+        next if points.nil?
+
         series << { 
           "name"=> metric['title'],
           "data"=> _points }

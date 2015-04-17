@@ -85,6 +85,8 @@ SCHEDULER.every '30s', :first_in => 0 do |job|
       # get the current points and value. Timespan is static set at 1
       # hour.
       value = q.value "#{stat}", "-10min"
+      next if value.nil?
+
       progress_items << {
       "name" => item.has_key?("title") ? item["title"] : stat,
       "value" => value,
