@@ -27,7 +27,7 @@ TIME_ZONE = 'Europe/London'
 
 # Logging
 #LOG_RENDERING_PERFORMANCE = True
-#LOG_CACHE_PERFORMANCE = True
+LOG_CACHE_PERFORMANCE = True
 #LOG_METRIC_ACCESS = True
 
 # Enable full debug page display on exceptions (Internal Server Error pages)
