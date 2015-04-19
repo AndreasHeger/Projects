@@ -59,7 +59,7 @@ class Graphite
         begin
           response = http.request(Net::HTTP::Get.new("/render?format=json&target=#{statname}&from=#{since}"))
         rescue StandardError => msg
-          puts "# error: retrieving data for '#{statname}': #{msg}\n"
+          puts "# error: retrieving data from http://#{@host}:#{@port}/render?format=json&target=#{statname}&from=#{since}: #{msg}\n"
           return nil
         end
         result = JSON.parse(response.body, :symbolize_names => true)
