@@ -13,42 +13,42 @@ job_mapping = [
                      'stat' => 'Wattson.Power.Solar' },
                    ]
                },
-   {"name" => "solarpower",
-    "interval" => "5s",
-    "since" => "-24hour",
-    "metrics" => [
-                  { 'title' => 'East',
-                    'stat' => 'Solar.Power.East' },
-                  { 'title' => 'West',
-                    'stat' => 'Solar.Power.West' },
-                  { 'title' => 'Total',
-                    'stat' => 'Solar.Power.Total' }
-                 ]
-               },
-   {"name" => "temperature_weekly",
-    "interval" => "5s",
-    "since" => "-7day",
-    "metrics" => [
-                  { 'title' => 'Fabian',
-                    'stat' => 'Temperature.TopFloor.FrontWall' },
-                  { 'title' => 'Niamh',
-                    'stat' => 'Temperature.TopFloor.BackWall' },
-                  { 'title' => 'Keeva',
-                    'stat' => 'Temperature.TopFloor.BackWall' },
-                  { 'title' => 'Living room',
-                    'stat' => 'Temperature.TopFloor.BackFloor' },
-                  { 'title' => 'Livingn room',
-                    'stat' => 'Temperature.LivingRoom.Window' },
-                  { 'title' => 'Garden room',
-                    'stat' => 'Temperature.GroundFloor.BackWindow' },
-                  { 'title' => 'Attic',
-                    'stat' => 'Temperature.TopFloor.Attic' },
-                  { 'title' => 'Boiler',
-                    'stat' => 'Temperature.Water.Boiler' },
-                  { 'title' => 'Water tank',
-                    'stat' => 'Temperature.Water.Tank' },
-                  ]
-               },
+   # {"name" => "solarpower",
+   #  "interval" => "5s",
+   #  "since" => "-24hour",
+   #  "metrics" => [
+   #                { 'title' => 'East',
+   #                  'stat' => 'Solar.Power.East' },
+   #                { 'title' => 'West',
+   #                  'stat' => 'Solar.Power.West' },
+   #                { 'title' => 'Total',
+   #                  'stat' => 'Solar.Power.Total' }
+   #               ]
+   #             },
+   # {"name" => "temperature_weekly",
+   #  "interval" => "5s",
+   #  "since" => "-7day",
+   #  "metrics" => [
+   #                { 'title' => 'Fabian',
+   #                  'stat' => 'Temperature.TopFloor.FrontWall' },
+   #                { 'title' => 'Niamh',
+   #                  'stat' => 'Temperature.TopFloor.BackWall' },
+   #                { 'title' => 'Keeva',
+   #                  'stat' => 'Temperature.TopFloor.BackWall' },
+   #                { 'title' => 'Living room',
+   #                  'stat' => 'Temperature.TopFloor.BackFloor' },
+   #                { 'title' => 'Livingn room',
+   #                  'stat' => 'Temperature.LivingRoom.Window' },
+   #                { 'title' => 'Garden room',
+   #                  'stat' => 'Temperature.GroundFloor.BackWindow' },
+   #                { 'title' => 'Attic',
+   #                  'stat' => 'Temperature.TopFloor.Attic' },
+   #                { 'title' => 'Boiler',
+   #                  'stat' => 'Temperature.Water.Boiler' },
+   #                { 'title' => 'Water tank',
+   #                  'stat' => 'Temperature.Water.Tank' },
+   #                ]
+   #             },
 ]
 
 job_mapping.each do |entry|

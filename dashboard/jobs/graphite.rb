@@ -96,37 +96,37 @@ class Graphite
     end
 end
 
-job_mapping.each do |title, dd|
-  statname = dd[0]
-  interval = dd[1]
+# job_mapping.each do |title, dd|
+#   statname = dd[0]
+#   interval = dd[1]
     
-  # dictionary with last values, can this be
-  # attached to the job?
-  last_values = {}
+#   # dictionary with last values, can this be
+#   # attached to the job?
+#   last_values = {}
 
-  SCHEDULER.every interval, :first_in => 0 do |job|
-    # create an instance of our Graphite class
-    q = Graphite.new GRAPHITE_HOST, GRAPHITE_PORT
+#   SCHEDULER.every interval, :first_in => 0 do |job|
+#     # create an instance of our Graphite class
+#     q = Graphite.new GRAPHITE_HOST, GRAPHITE_PORT
 
-    # get the current points and value. Timespan is static set at 1
-    # hour.
-    points, current = q.points "#{statname}", "-1hour"
+#     # get the current points and value. Timespan is static set at 1
+#     # hour.
+#     points, current = q.points "#{statname}", "-1hour"
 
-    next if points.nil?
+#     next if points.nil?
 
-    last_values[title] ||= current
+#     last_values[title] ||= current
 
-    # send to dashboard, supports for number (current, last), meter
-    # (value) and graph widgets (points)
-    send_event("#{title}", { 
-                 current: current.sigfig_to_s(3),
-                 value: current,
-                 last: last_values[title],
-                 points: points })
+#     # send to dashboard, supports for number (current, last), meter
+#     # (value) and graph widgets (points)
+#     send_event("#{title}", { 
+#                  current: current.sigfig_to_s(3),
+#                  value: current,
+#                  last: last_values[title],
+#                  points: points })
 
-    last_values[title] = current
-  end
-end
+#     last_values[title] = current
+#   end
+# end
 
 # job_mapping.each do |title, statname|
 #    SCHEDULER.every INTERVAL, :first_in => 0 do
