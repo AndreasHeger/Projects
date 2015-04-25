@@ -91,8 +91,9 @@ class Graphite
         since ||= '-10min'
         stats = query name, since
         return nil if stats.nil?
-        last = (stats[:datapoints].select { |el| not el[0].nil? }).last[0]
-        return last
+        s = stats[:datapoints].select { |el| not el[0].nil? }
+        return nil if s.empty?
+        return s.last[0]
     end
 end
 
