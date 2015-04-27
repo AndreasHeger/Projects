@@ -105,16 +105,13 @@ def parseWeather(infile):
     wunderground URL
     '''
 
-    station, temperature = None, None
-    wind_direction, wind_speed = None, None
-
     keep = 0
     take = ['{']
     for x in infile:
         x = x.strip()
         if x.startswith('"current_observation": {'):
             keep = 1
-        elif '{' in x: 
+        elif '{' in x:
             if keep > 0:
                 keep += 1
         elif '}' in x:
@@ -131,7 +128,7 @@ def parseWeather(infile):
     decoded = json.loads(txt)
     current = decoded["current_observation"]
     return dict((
-        ("temperature", current["temperature"]),
-        ("wind_direction", current["wind_dir_degrees"]),
-        ("wind_speed", current["wind_speed"])))
+        ("Weather.Temperature.Outside", current["temperature"]),
+        ("Weather.Wind.Direction", current["wind_dir_degrees"]),
+        ("Weather.Wind.Speed", current["wind_speed"])))
 

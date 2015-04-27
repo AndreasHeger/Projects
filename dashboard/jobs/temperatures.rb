@@ -77,6 +77,10 @@ job_mapping = [
       "stat" => 'Temperature.Water.Tank',
       "breakpoints" => [0,35,40,55,58,60],
                },
+    { "title" => "Outside",
+      "stat" => 'Weather.Temperature.Outside',
+      "breakpoints" => [-10,0,10,25,30,40],
+               },
 ]
 
 SCHEDULER.every '30s', :first_in => 0 do |job|
