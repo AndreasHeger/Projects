@@ -70,7 +70,7 @@ SENSOR_GROUPS = [
     ("Temperature.DiningRoom.Front",
      "Temperature.LivingRoom.CupBoard",
      "Temperature.Landing.Middle",
-     "Temperature.DiningRoom.Back."),
+     "Temperature.DiningRoom.Back"),
     ("Temperature.Hallway.Top",
      "Temperature.Hallway.Bottom",
      "Temperature.GroundFloor.BackDoor",
