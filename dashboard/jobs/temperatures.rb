@@ -21,7 +21,7 @@ job_mapping = [
       "stat" => 'Temperature.LivingRoom.CupBoard',
       "breakpoints" => [0,10,15,22,25,40],
                },
-    { "title" => "Dining room (window)",
+    { "title" => "Dining room",
       "stat" => 'Temperature.DiningRoom.Front',
       "breakpoints" => [0,10,15,22,25,40],
                },
