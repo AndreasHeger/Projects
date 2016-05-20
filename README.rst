@@ -100,3 +100,9 @@ Installation::
    chmod u+x /etc/init.d/monitor_weather
    update-rc.d monitor_weather defaults 80
 
+Changes for devicetree
+
+/boot/config.txt
+
+dtoverlay=w1-gpio
+dtparam=i2c-arm
