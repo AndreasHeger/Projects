@@ -23,16 +23,13 @@ class App(Monitor):
     label = "wattson"
 
     def __init__(self, *args, **kwargs):
-        
         Monitor.__init__(self, *args, **kwargs)
-
         self.port = '/dev/ttyUSB0'
         # stty settings
         self.stty = "5:0:8be:0:0:0:0:0:0:a" + ":0" * 26
 
     def communicate(self, command):
         '''communicate with wattson energy monitor'''
-
         self.logger.debug('sending commands %s' % command)
         ser = self.connection
         ser.flush()
@@ -80,8 +77,9 @@ class App(Monitor):
             baudrate=19200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS)
-
+            bytesize=serial.EIGHTBITS,
+            timeout=1)
+        self.connection.close()
         self.connection.open()
         assert self.connection.isOpen()
 
@@ -135,15 +133,23 @@ class App(Monitor):
         return values
 
 logger = logging.getLogger("DaemonLog")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler = logging.FileHandler("/mnt/ramdisk/wattson.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+# for debugging
+# logging.getLogger().addHandler(logging.StreamHandler())
+
 app = App(logger=logger, heart_beat=HEART_BEAT)
+# for debugging
+# app.setup()
+# app.monitor()
 
 daemon_runner = runner.DaemonRunner(app)
+
 # This ensures that the logger file handle does not get closed during
 # daemonization
 daemon_runner.daemon_context.files_preserve = [handler.stream]
