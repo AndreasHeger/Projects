@@ -1,0 +1,13 @@
+[Unit]
+Description=Monitoring Solar Converter
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python /usr/share/solar/monitor_solar.py start
+Type=simple
+PIDFile=/var/run/monitor_solar.pid
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
