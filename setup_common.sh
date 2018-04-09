@@ -74,34 +74,8 @@ perl -p -e "s/start\)\n/start)\nmkdir \/var\/log\/apache2 || true\n/" < /etc/ini
 fi
 
 #######################################################
-echo "setting up monitoring of solar"
-
-cp monitor_solar.sh /etc/init.d/monitor_solar
-chmod 755 /etc/init.d/monitor_solar
-cp monitor_solar.py /usr/share/solar/monitor_solar.py
-chmod u+x /etc/init.d/monitor_solar
-
-#######################################################
-echo "setting up monitoring of weather"
-
-cp monitor_weather.sh /etc/init.d/monitor_weather
-chmod 755 /etc/init.d/monitor_weather
-cp monitor_weather.py /usr/share/solar/monitor_weather.py
-chmod u+x /etc/init.d/monitor_weather
-
-#######################################################
-echo "setting up monitoring of temperature"
-cp monitor_temperature.sh /etc/init.d/monitor_temperature
-chmod 755 /etc/init.d/monitor_temperature
-cp monitor_temperature.py /usr/share/solar/monitor_temperature.py
-chmod u+x /etc/init.d/monitor_temperature
-
-#######################################################
-echo "setting up monitoring of wattson"
-cp monitor_wattson.sh /etc/init.d/monitor_wattson
-chmod 755 /etc/init.d/monitor_wattson
-cp monitor_wattson.py /usr/share/solar/monitor_wattson.py
-chmod u+x /etc/init.d/monitor_wattson
+echo "installing systemd scripts for monitoring"
+cp *.service /etc/systemd/system
 
 #######################################################
 echo "setting up web services"
@@ -110,14 +84,6 @@ cp Monitor.py Utils.py /usr/share/solar/
 chown -R www-data:www-data /usr/lib/cgi-bin/*.py /mnt/ramdisk
 cp images/*.png /mnt/ramdisk
 ln -fs /mnt/ramdisk /var/www/images
-
-# The following needs to be done to activate the various services
-# depending on which machine we are on:
-#
-# update-rc.d monitor_weather defaults 80
-# update-rc.d monitor_temperature defaults 80
-# update-rc.d monitor_solar defaults 80
-# sudo rename 's/S01/S90/' /etc/rc*.d/S*monito*
 
 ##########################################################
 #
@@ -135,3 +101,12 @@ echo "@daily  /etc/init.d/ramdisk sync >> /dev/null 2>&1" | crontab
 # If apache does not start up, 
 # make sure /var/log/apache2 exists
 
+# redirect several dirs to /tmp
+rm -rf /var/lib/dhcp/ /var/lib/dhcpcd5 /var/run /var/spool /var/lock /etc/resolv.conf /var/log
+ln -s /tmp /var/lib/dhcp
+ln -s /tmp /var/lib/dhcpcd5
+ln -s /tmp /var/run
+ln -s /tmp /var/spool
+ln -s /tmp /var/lock
+ln -s /tmp /var/log
+touch /tmp/dhcpcd.resolv.conf; ln -s /tmp/dhcpcd.resolv.conf /etc/resolv.conf

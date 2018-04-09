@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright (c) 2013- Andreas Heger
 # All rights reserved.
 #

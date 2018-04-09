@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright (c) 2013- Andreas Heger
 # All rights reserved.
 #
@@ -7,7 +8,7 @@
 #
 # 
 #
-# /etc/init.d/monitor_solar
+# /etc/init.d/monitor_wattson
 #
 ### BEGIN INIT INFO
 # Provides: monitor_wattson
