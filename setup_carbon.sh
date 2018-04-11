@@ -3,23 +3,24 @@
 #apt-get install graphite-carbon
 
 # Change to true, to enable carbon-cache on boot
-#sed -i "s/CARBON_CACHE_ENABLED=false/CARBON_CACHE_ENABLED=true/" /etc/default/graphite-carbon
+sed -i "s/CARBON_CACHE_ENABLED=false/CARBON_CACHE_ENABLED=true/" /etc/default/graphite-carbon
 
-#mkdir -p /mnt/ramdisk/graphite/whisper
-#mkdir -p /mnt/ramdisk/graphite/log
-#chown -R _graphite:_graphite /mnt/ramdisk/graphite
-# values below are ignored
-#sed -i "s:STORAGE_DIR    = /var/lib/graphite/:STORAGE_DIR = /mnt/ramdisk/graphite:" /etc/carbon/carbon.conf
-#sed -i "s:LOCAL_DATA_DIR = /var/lib/graphite/whisper/:LOCAL_DATA_DIR = /mnt/ramdisk/graphite/whisper:" /etc/carbon/carbon.conf
-#sed -i "s:LOG_DIR        = /var/log/carbon/:LOG_DIR = /mnt/ramdisk/graphite/log:" /etc/carbon/carbon.conf
-#sed -i "s:PID_DIR        = /var/run/:PID_DIR = /mnt/ramdisk/graphite:" /etc/carbon/carbon.conf
-#sed -i "s:ENABLE_LOGROTATION = False:ENABBLE_LOGROTATION = True:" /etc/carbon/carbon.conf
+mkdir -p /mnt/ramdisk/graphite/whisper
+mkdir -p /mnt/ramdisk/graphite/log
+chown -R _graphite:_graphite /mnt/ramdisk/graphite
+
+# values below are ignored, those ith the systemd file taking precedence
+sed -i "s:STORAGE_DIR    = /var/lib/graphite/:STORAGE_DIR = /mnt/ramdisk/graphite:" /etc/carbon/carbon.conf
+sed -i "s:LOCAL_DATA_DIR = /var/lib/graphite/whisper/:LOCAL_DATA_DIR = /mnt/ramdisk/graphite/whisper:" /etc/carbon/carbon.conf
+sed -i "s:LOG_DIR        = /var/log/carbon/:LOG_DIR = /mnt/ramdisk/graphite/log:" /etc/carbon/carbon.conf
+sed -i "s:PID_DIR        = /var/run/:PID_DIR = /mnt/ramdisk/graphite:" /etc/carbon/carbon.conf
+sed -i "s:ENABLE_LOGROTATION = False:ENABBLE_LOGROTATION = True:" /etc/carbon/carbon.conf
 
 # ignored by systemd
-#sed -i "s:PIDFILE=/var/run/\$NAME.pid:PIDFILE=/mnt/ramdisk/graphite.pid:" /etc/init.d/carbon-cache
-#sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /etc/init.d/carbon-cache
+sed -i "s:PIDFILE=/var/run/\$NAME.pid:PIDFILE=/mnt/ramdisk/graphite.pid:" /etc/init.d/carbon-cache
+sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /etc/init.d/carbon-cache
 
-#sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /lib/systemd/system/carbon*
+sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /lib/systemd/system/carbon*
 
 echo "installing graphite"
 apt-get install python python-pip build-essential python-dev libcairo2-dev libffi-dev
@@ -27,6 +28,9 @@ pip install graphite-api
 
 mkdir -p /mnt/ramdisk/graphite_index
 chown www-data:www-data /mnt/ramdisk/graphite_index
+
+# make sure that directory for apache2 logs exists
+mkdir /var/log/apache2
 
 echo "install graphite-api.yml"
 
@@ -85,5 +89,4 @@ Listen 8013
 EOT3
 
 ln -s /etc/apache2/sites-available/graphite.conf /etc/apache2/sites-enabled/graphite.conf
-
 

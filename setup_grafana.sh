@@ -5,3 +5,6 @@ echo "deb https://dl.bintray.com/fg2it/deb stretch main" | sudo tee -a /etc/apt/
 
 apt-get update
 apt-get install grafana
+
+mv /var/lib/grafana /mnt/ramdisk/grafana
+ln -s /mnt/ramdisk/grafana /var/lib/grafana

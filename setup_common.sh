@@ -14,8 +14,12 @@ insserv -r x11-common
 # # auto-remove some X11 related libs
 apt-get -y autoremove --purge
 
+# use busybox to log to memory
+apt-get -y install busybox-syslogd
+dpkg --purge rsyslog
+
 # # install packages required for monitoring
-apt-get -y install rrdtool python-rrdtool python-daemon apache2 python-serial
+apt-get -y install python-daemon apache2 python-serial
 
 # turn off 
 if [ ! -e /etc/default/rcS.orig ]; then
@@ -84,6 +88,9 @@ cp Monitor.py Utils.py /usr/share/solar/
 chown -R www-data:www-data /usr/lib/cgi-bin/*.py /mnt/ramdisk
 cp images/*.png /mnt/ramdisk
 ln -fs /mnt/ramdisk /var/www/images
+
+cp ro-apache.sh /etc/init.d/ro-apache
+update-rc.d ro-apache defaults 00 99
 
 ##########################################################
 #
