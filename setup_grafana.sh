@@ -8,3 +8,5 @@ apt-get install grafana
 
 mv /var/lib/grafana /mnt/ramdisk/grafana
 ln -s /mnt/ramdisk/grafana /var/lib/grafana
+
+systemctl enable grafana-server.service

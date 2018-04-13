@@ -71,11 +71,11 @@ mkdir /usr/share/solar
 mkdir /usr/lib/cgi-bin
 
 #######################################################
-echo "change /etc/init.d/apache2 to create log dir"
-if [ ! -e /etc/init.d/apache2.orig ] ; then
-cp /etc/init.d/apache2 /etc/init.d/apache2.orig
-perl -p -e "s/start\)\n/start)\nmkdir \/var\/log\/apache2 || true\n/" < /etc/init.d/apache2.orig > /etc/init.d/apache2
-fi
+# echo "change /etc/init.d/apache2 to create log dir"
+# if [ ! -e /etc/init.d/apache2.orig ] ; then
+# cp /etc/init.d/apache2 /etc/init.d/apache2.orig
+# perl -p -e "s/start\)\n/start)\nmkdir \/var\/log\/apache2 || true\n/" < /etc/init.d/apache2.orig > /etc/init.d/apache2
+# fi
 
 #######################################################
 echo "installing systemd scripts for monitoring"
@@ -88,9 +88,6 @@ cp Monitor.py Utils.py /usr/share/solar/
 chown -R www-data:www-data /usr/lib/cgi-bin/*.py /mnt/ramdisk
 cp images/*.png /mnt/ramdisk
 ln -fs /mnt/ramdisk /var/www/images
-
-cp ro-apache.sh /etc/init.d/ro-apache
-update-rc.d ro-apache defaults 00 99
 
 ##########################################################
 #

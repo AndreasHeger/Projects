@@ -22,6 +22,9 @@ sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /etc/in
 
 sed -i "s:--logdir=/var/log/carbon/:--logdir=/mnt/ramdisk/graphite/log:" /lib/systemd/system/carbon*
 
+# to enable apache2 start even on read-only disk
+sed -i "s:PrivateTmp=true:PrivateTmp=false:" /lib/systemd/system/apache2.service
+
 echo "installing graphite"
 apt-get install python python-pip build-essential python-dev libcairo2-dev libffi-dev
 pip install graphite-api
